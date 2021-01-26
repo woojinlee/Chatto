@@ -274,9 +274,9 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         let offset = layoutConstants.horizontalMargin + layoutConstants.horizontalInterspacing
         let xConstraint: NSLayoutConstraint
         if viewModel.isIncoming {
-            xConstraint = bubbleView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: offset)
+            xConstraint = bubbleView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: offset)
         } else {
-            xConstraint = bubbleView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -offset)
+            xConstraint = bubbleView.trailingAnchor.constraint(equalTo: contentView.transform, constant: -offset)
         }
 
         NSLayoutConstraint.activate([
