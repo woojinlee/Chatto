@@ -75,8 +75,9 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
 
     public var animationDuration: CFTimeInterval = 0.33
     open var viewContext: ViewContext = .normal
-
     public private(set) var isUpdating: Bool = false
+    let isRtl = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
+    
     open func performBatchUpdates(_ updateClosure: @escaping () -> Void, animated: Bool, completion: (() -> Void)?) {
         self.isUpdating = true
         let updateAndRefreshViews = {
@@ -343,7 +344,8 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
             avatarVerticalAlignment: self.baseStyle.avatarVerticalAlignment(viewModel: self.messageViewModel),
             isShowingSelectionIndicator: self.messageViewModel.decorationAttributes.isShowingSelectionIndicator,
             selectionIndicatorSize: self.baseStyle.selectionIndicatorIcon(for: self.messageViewModel).size,
-            selectionIndicatorMargins: self.baseStyle.selectionIndicatorMargins
+            selectionIndicatorMargins: self.baseStyle.selectionIndicatorMargins,
+            isRtl: self.isRtl
         )
         var layoutModel = Layout()
         layoutModel.calculateLayout(parameters: parameters)
@@ -521,8 +523,9 @@ private struct Layout {
         }
 
         currentX += self.selectionIndicatorFrame.maxX
-
-        if isIncoming {
+        
+        switch (isIncoming, parameters.isRtl) {
+        case (true, false), (false, true):
             currentX += horizontalMargin
             self.avatarViewFrame.origin.x = currentX
             currentX += avatarSize.width
@@ -536,7 +539,8 @@ private struct Layout {
                 currentX += horizontalInterspacing
             }
             self.bubbleViewFrame.origin.x = currentX
-        } else {
+            
+        default:
             currentX = containerRect.maxX - horizontalMargin
             currentX -= avatarSize.width
             self.avatarViewFrame.origin.x = currentX
@@ -551,8 +555,8 @@ private struct Layout {
             }
             currentX -= bubbleSize.width
             self.bubbleViewFrame.origin.x = currentX
+            
         }
-
         self.size = containerRect.size
         self.preferredMaxWidthForBubble = preferredWidthForBubble
     }
@@ -572,4 +576,5 @@ private struct LayoutParameters {
     let isShowingSelectionIndicator: Bool
     let selectionIndicatorSize: CGSize
     let selectionIndicatorMargins: UIEdgeInsets
+    let isRtl: Bool
 }
